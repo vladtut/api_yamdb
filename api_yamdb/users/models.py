@@ -8,10 +8,12 @@ CHOICES = (
 )
 
 class User(AbstractUser):
-    user_role=models.CharField(
+    role=models.CharField(
         max_length=16,
         choices=CHOICES,
         default='user'
     )
-
-
+    bio = models.TextField(
+        'Биография',
+        blank=True,
+    )
