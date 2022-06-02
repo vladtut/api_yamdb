@@ -6,12 +6,11 @@ app_name = 'users'
 
 router = routers.DefaultRouter()
 router.register(r'users', UserAdminViewSet)
-router.register(r'users/me/', UserSelfViewSet, basename='me')
+router.register(r'users/me', UserSelfViewSet, basename='me')
 
 
 urlpatterns = [
-    path('/', include(router.urls)),
+    path('', include(router.urls)),
     path('auth/signup/', user_signup, name='signup'),
-    path('auth/token/', get_jwt_token, name='token'),
-
+    path('auth/token/', get_jwt_token, name='token')
 ]

@@ -6,19 +6,11 @@ from rest_framework.validators import UniqueValidator
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-        read_only_fields = ('role',)
-    
-    def validate(self, attrs):
-        email=attrs['email']
-        if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError(
-                {'email',}('Такой email уже используется')
-            )
-        return super().validate(attrs)
+        fields = ('username', 'email', 'first_name', 'last_name', 'bio', 'role',)
     
     def create(self, validated_data):
         return User.objects.create_user(validated_data)
+
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
@@ -32,27 +24,24 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             UniqueValidator(queryset=User.objects.all())
         ]
     )
-    class Meta:
-        model = User
-        fields = ('username', 'email',)
 
-    def validate(self, attrs):
-        email=attrs.get('email',)
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                {'email',}('Такой email уже используется')
-            )
-        return super().validate(attrs)
+    def validate_username(self, value):
+        if value.lower() == 'me':
+            raise serializers.ValidationError('me - последняя буква в алфавите')
+        return value
+
+    class Meta:
+        fields = ("username", "email",)
+        model = User
+
 
 class UserSelfEditSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
+                  'last_name', 'bio', 'role',)
         model = User
         read_only_fields = ('role',)
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
-
-
