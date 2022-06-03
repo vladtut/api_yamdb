@@ -31,7 +31,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         return value
 
     class Meta:
-        fields = ("username", "email",)
+        fields = ('username', 'email',)
         model = User
 
 
