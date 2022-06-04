@@ -16,6 +16,6 @@ class IsRoleUser(permissions.BasePermission):
 class ReadOnly(permissions.BasePermission):
 
     def has_permission(self, request, view, obj):
-        return request.method in permissions.SAFE_METHODS:
+        return request.method in permissions.SAFE_METHODS
 
         #return obj.author == request.user

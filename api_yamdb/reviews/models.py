@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=256)
@@ -30,7 +32,7 @@ class Title(models.Model):
         blank=True,
         null=True
     )
-    genre = models.ManyToManyField(Genre, verbose_name='Жанр')
+    genre = models.ManyToManyField(Genre, verbose_name='Жанр', related_name='titles')
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
@@ -95,7 +97,46 @@ class Comment(models.Model):
     author = models.ForeignKey(
         'User',
         on_delete=models.CASCADE,
-        related_name='reviews',
+        related_name='comments',
         help_text='введите автора',
         verbose_name='Автор',
     )
+
+
+class User(AbstractUser):
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+    CHOICES = [
+        (ADMIN, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (USER, 'Пользователь'),
+    ]
+    email = models.EmailField(
+        verbose_name='Адрес электронной почты',
+        unique=True,
+    )
+    username = models.CharField(
+        verbose_name='username',
+        max_length=255,
+        null=True,
+        unique=True,
+    )
+    role = models.CharField(
+        max_length=16,
+        choices=CHOICES,
+        default='user'
+    )
+    bio = models.TextField(
+        'Биография',
+        blank=True,
+    )
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
+

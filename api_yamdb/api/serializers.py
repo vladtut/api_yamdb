@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title, Comment, Review
+from reviews.models import Category, Genre, Title, Comment, Review, User
+from rest_framework.validators import UniqueValidator
+
 
 class CategorySerializer(serializers.ModelSerializer):
 
@@ -18,16 +20,16 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     category = CategorySerializer(
-        slug_field='slug',
+        #slug_field='slug',
         many=False,
-        queryset=Category.objects.all(),
+        #queryset=Category.objects.all(),
         required=False
     )
     genre = GenreSerializer(
-        slug_field='slug',
+        #slug_field='slug',
         many=True,
         required=False,
-        queryset=Genre.objects.all()
+        #queryset=Genre.objects.all()
     )
     rating = serializers.IntegerField()
 
@@ -43,6 +45,7 @@ class TitleSerializer(serializers.ModelSerializer):
             'genre',
             'category'
         )
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -62,3 +65,50 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Review
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role',)
+
+    def create(self, validated_data):
+        return User.objects.create_user(validated_data)
+
+
+class UserSignUpSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ],
+        required=True,
+    )
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
+
+    def validate_username(self, value):
+        if value.lower() == 'me':
+            raise serializers.ValidationError(
+                'me - последняя буква в алфавите')
+        return value
+
+    class Meta:
+        fields = ('username', 'email',)
+        model = User
+
+
+class UserSelfEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role',)
+        model = User
+        read_only_fields = ('role',)
+
+
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
