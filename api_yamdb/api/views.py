@@ -68,6 +68,16 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (
         IsRoleUser | ReadOnly)
 
+    def perform_create(self, serializer):
+        title_id = self.kwargs.get("title_id")
+        title = Title.objects.get(id=title_id)
+        serializer.save(author=self.request.user, title=title)
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
+        new_queryset = title.reviews.all()
+        return new_queryset
+
 
 class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс наследник viewset
     queryset = User.objects.all()
