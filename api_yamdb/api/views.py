@@ -1,3 +1,5 @@
+import email
+from functools import partial
 from rest_framework_simplejwt.tokens import AccessToken
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets, viewsets, permissions
@@ -92,10 +94,10 @@ class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс на
             serializer = self.get_serializer(user, many=False)
             return Response(serializer.data)
         if request.method == 'PATCH':
-            serializer = UserSelfEditSerializer(data=request.data)
+            serializer = UserSelfEditSerializer(user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -103,6 +105,7 @@ class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс на
 def user_signup(request):
     serializer = UserSignUpSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+    print(serializer.validated_data['email'])
     serializer.save()
     user = get_object_or_404(
         User,
@@ -129,7 +132,7 @@ def get_jwt_token(request):
     )
     if default_token_generator.check_token(
         user, serializer.validated_data['confirmation_code']
-    ):
+    ):  
         token = AccessToken.for_user(user)
         return Response({'token': str(token)}, status=status.HTTP_200_OK)
 

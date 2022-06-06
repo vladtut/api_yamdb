@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Genre, Title, Review, Comment
+from .models import Category, Genre, Title, Review, Comment, User
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("pk", "name", "slug")
@@ -30,3 +30,4 @@ admin.site.register(Genre, GenreAdmin)
 admin.site.register(Title, TitleAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Review, ReviewAdmin)
+admin.site.register(User)

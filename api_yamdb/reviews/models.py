@@ -119,7 +119,6 @@ class User(AbstractUser):
     username = models.CharField(
         verbose_name='username',
         max_length=255,
-        null=True,
         unique=True,
     )
     role = models.CharField(
