@@ -6,35 +6,51 @@ from rest_framework.validators import UniqueValidator
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = '__all__'
+        fields = ('name', 'slug')
         lookup_field = 'slug'
         model = Category
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        fields = ('name', 'slug')
         lookup_field = 'slug'
         model = Genre
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(
-        #slug_field='slug',
-        many=False,
-        #queryset=Category.objects.all(),
-        required=False
+class TitlesSerializer(serializers.ModelSerializer):
+    """Основной метод записи информации."""
+    category = serializers.SlugRelatedField(
+        slug_field='slug', many=False, queryset=Category.objects.all()
     )
-    genre = GenreSerializer(
-        #slug_field='slug',
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
         many=True,
         required=False,
-        #queryset=Genre.objects.all()
+        queryset=Genre.objects.all()
     )
-    rating = serializers.IntegerField()
 
     class Meta:
         fields = '__all__'
+        model = Title
+
+
+class TitlesViewSerializer(serializers.ModelSerializer):
+    """Основной метод просмотра информации."""
+    category = CategorySerializer(many=False, required=True)
+    genre = GenreSerializer(many=True, required=False)
+    rating = serializers.IntegerField()
+
+    class Meta:
+        fields = (
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category'
+        )
         model = Title
         read_only_fields = (
             'id',

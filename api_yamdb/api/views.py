@@ -6,7 +6,7 @@ from rest_framework import filters, status, viewsets, viewsets, permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from api.serializers import (
-    CategorySerializer, GenreSerializer, TitleSerializer)
+    CategorySerializer, GenreSerializer, TitlesSerializer, TitlesViewSerializer)
 from rest_framework.decorators import api_view, permission_classes
 from reviews.models import Category, Genre, Title, User
 from .filters import TitlesFilter
@@ -52,11 +52,16 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+    serializer_class = TitlesSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsRoleAdmin | ReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitlesFilter
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return TitlesViewSerializer
+        return TitlesSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):
