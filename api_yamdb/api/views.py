@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from api.serializers import (
     CategorySerializer, GenreSerializer, TitlesSerializer, TitlesViewSerializer)
 from rest_framework.decorators import api_view, permission_classes
-from reviews.models import Category, Genre, Title, User
+from reviews.models import Category, Genre, Review, Title, User
 from .filters import TitlesFilter
 from django.shortcuts import get_object_or_404
 from .permissions import IsRoleAdmin, IsRoleUser, IsRoleModerator, ReadOnly
@@ -67,13 +67,23 @@ class TitleViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (
-        IsRoleUser | ReadOnly,)
+        IsRoleAdmin | IsRoleModerator | IsRoleUser,)
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get("review_id")
+        review = get_object_or_404(Review, id=review_id)
+        serializer.save(author=self.request.user, review=review)
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs.get("review_id"))
+        new_queryset = review.comments.all()
+        return new_queryset
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
-       IsRoleAdmin | IsRoleUser,)
+        IsRoleAdmin | IsRoleModerator | IsRoleUser,)
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get("title_id")
@@ -99,7 +109,8 @@ class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс на
             serializer = self.get_serializer(user, many=False)
             return Response(serializer.data)
         if request.method == 'PATCH':
-            serializer = UserSelfEditSerializer(user, data=request.data, partial=True)
+            serializer = UserSelfEditSerializer(
+                user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

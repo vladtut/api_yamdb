@@ -67,6 +67,9 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+    review = serializers.SlugRelatedField(
+        read_only=True, slug_field='id'
+    )  
 
     class Meta:
         fields = '__all__'
@@ -77,16 +80,20 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+    title = serializers.SlugRelatedField(
+        read_only=True, slug_field='id'
+    )    
 
     class Meta:
         fields = '__all__'
         model = Review
 
     def validate(self, data):
-        if self.context['request'].method != 'POST':
-            return data
-        #title_id = self.context['view'].kwargs.get("title_id")
-        #raise ValidationError("Вы не можите подписаться на самого себя.")
+        if self.context['request'].method == 'POST':
+            user = self.context['request'].user
+            title_id = self.context['view'].kwargs.get("title_id")
+            if Review.objects.filter(author=user, title=title_id).exists():
+                raise serializers.ValidationError("Нельзя оставлять отзыв два раза.")
         return data
 
     def validate_score(self, value):

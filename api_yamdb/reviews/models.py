@@ -77,7 +77,10 @@ class Review(models.Model):
         help_text='укажите оценку произведения',
         verbose_name='оценка',
     )
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['author', 'title'], name='unique review')
+        ]
 
 class Comment(models.Model):
     review = models.ForeignKey(
