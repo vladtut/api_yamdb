@@ -82,14 +82,25 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
 
+    def validate(self, data):
+        if self.context['request'].method != 'POST':
+            return data
+        #title_id = self.context['view'].kwargs.get("title_id")
+        #raise ValidationError("Вы не можите подписаться на самого себя.")
+        return data
+
+    def validate_score(self, value):
+        if value < 1 or value > 10:
+            raise serializers.ValidationError(
+                "Оценка должна быть целым числом от 1 до 10")
+        return value
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role',)
-    
-
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):

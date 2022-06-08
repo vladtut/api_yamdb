@@ -195,27 +195,3 @@ POST http://api.example.org/api/v1/users/
 ```
 GET http://api.example.org/api/v1/users/{username}/
 ```
-
-Изменение данных пользователя по username
-
-```
-PATCH http://api.example.org/api//v1/users/{username}/
-```
-
-Удаление пользователя по username
-
-```
-DEL http://api.example.org/api//v1/users/{username}/
-```
-
-Получение данных своей учетной записи
-
-```
-GET http://api.example.org/api//v1/users/me/
-```
-
-Изменение данных своей учетной записи
-
-```
-PATCH http://api.example.org/api//v1/users/me/
-```
