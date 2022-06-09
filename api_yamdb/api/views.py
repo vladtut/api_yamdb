@@ -1,21 +1,23 @@
-import email
 from functools import partial
-from rest_framework_simplejwt.tokens import AccessToken
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets, viewsets, permissions
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
-from api.serializers import (
-    CategorySerializer, GenreSerializer, TitlesSerializer, TitlesViewSerializer)
-from rest_framework.decorators import api_view, permission_classes
-from reviews.models import Category, Genre, Review, Title, User
-from .filters import TitlesFilter
-from django.shortcuts import get_object_or_404
-from .permissions import IsRoleAdmin, IsRoleUser, IsRoleModerator, ReadOnly
-from .serializers import CommentSerializer, ReviewSerializer, UserSerializer, UserSelfEditSerializer, UserSignUpSerializer, TokenSerializer
-from rest_framework.decorators import action
+
+from api.serializers import (CategorySerializer, CommentSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             TitlesSerializer, TitlesViewSerializer,
+                             TokenSerializer, UserSelfEditSerializer,
+                             UserSerializer, UserSignUpSerializer)
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
+from reviews.models import Category, Genre, Review, Title, User
+
+from .filters import TitlesFilter
+from .permissions import IsRoleAdmin, IsRoleModerator, IsRoleUser, ReadOnly
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -52,7 +54,6 @@ class GenreViewSet(viewsets.ModelViewSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    serializer_class = TitlesSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsRoleAdmin | ReadOnly]
     filter_backends = [DjangoFilterBackend]
@@ -102,7 +103,12 @@ class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс на
     permission_classes = (IsRoleAdmin,)
     lookup_field = 'username'
 
-    @action(detail=False, url_path='me', methods=['get', 'patch'], permission_classes=[permissions.IsAuthenticated], serializer_class=UserSelfEditSerializer)
+    @action(
+        detail=False, url_path='me',
+        methods=['get', 'patch'],
+        permission_classes=[permissions.IsAuthenticated],
+        serializer_class=UserSelfEditSerializer
+    )
     def me(self, request):
         user = self.request.user
         if request.method == 'GET':
