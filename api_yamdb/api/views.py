@@ -1,4 +1,4 @@
-from functools import partial
+# from functools import partial
 
 from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, ReviewSerializer,
@@ -97,7 +97,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return new_queryset
 
 
-class UserAdminViewSet(viewsets.ModelViewSet):  # создаем класс наследник viewset
+class UserAdminViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsRoleAdmin,)

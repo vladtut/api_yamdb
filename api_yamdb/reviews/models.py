@@ -44,6 +44,9 @@ class User(AbstractUser):
     def is_user(self):
         return self.role == self.USER
 
+    class Meta:
+        ordering = ('username',)
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=256)
@@ -52,6 +55,9 @@ class Genre(models.Model):
     def __str__(self):
         return self.slug
 
+    class Meta:
+        ordering = ('name',)
+
 
 class Category(models.Model):
     name = models.CharField(max_length=256)
@@ -59,6 +65,9 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return self.slug
+
+    class Meta:
+        ordering = ('name',)
 
 
 class Title(models.Model):
@@ -200,3 +209,6 @@ class Comment(models.Model):
         help_text='введите автора',
         verbose_name='Автор',
     )
+
+    class Meta:
+        ordering = ('-pub_date',)
