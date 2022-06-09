@@ -24,11 +24,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    #'reviews.apps.ReviewsConfig',
+    # 'reviews.apps.ReviewsConfig',
     'django_filters',
     'api',
     'reviews',
-    #'users',
+    # 'users',
 ]
 
 MIDDLEWARE = [
@@ -110,7 +110,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
 
-# Authentification 
+# Authentification
 AUTH_USER_MODEL = 'reviews.User'
 
 REST_FRAMEWORK = {
@@ -126,8 +126,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     # Устанавливаем срок жизни токена
-'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 #  подключаем движок filebased.EmailBackend
