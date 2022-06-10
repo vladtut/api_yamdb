@@ -17,11 +17,13 @@ router.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet, basename='comments',
 )
-
+urlpatterns_auth = [
+    path('auth/signup/', user_signup, name='signup'),
+    path('auth/token/', get_jwt_token, name='token')
+]
 app_name = 'api'
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    path('v1/auth/signup/', user_signup, name='signup'),
-    path('v1/auth/token/', get_jwt_token, name='token')
+    path('v1/', include(urlpatterns_auth)),
 ]
